@@ -13,6 +13,8 @@ import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.Statement;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
+import com.datastax.driver.mapping.Mapper;
+import com.datastax.driver.mapping.MappingManager;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
@@ -52,9 +54,14 @@ public class Main {
         
         cluster = Cluster.builder()
                 .addContactPoint("34.105.198.105")
-                .build();
-        
+                .build();        
         session = cluster.connect("server_auth");
+        
+        MappingManager manager = new MappingManager(session);
+        final Mapper<User> mapper = manager.mapper(User.class);
+        
+        User foundUser = mapper.get(UUID.fromString("26ba1d4d-91d2-4773-8863-7f133fff81d2"));
+        System.out.println(foundUser.toString());
         
         // final ZonedDateTime birthdayTimestamp = ZonedDateTime.parse("2000-05-02T10:00:00.433395762Z");
         // cas.addUserWithoutAge(session, "Ilya", "Tsuprun");
@@ -63,13 +70,13 @@ public class Main {
         
         // ResultSet result = session.execute("SELECT * FROM user_table");
         
-        cas.addUserByStatementObject(session, "Max", "Fisher");
+        // cas.addUserByStatementObject(session, "Max", "Fisher");
         
-        Statement allUsersStatement = QueryBuilder.select().all().from("server_auth", "user_table");
-        ResultSet result = session.execute(allUsersStatement);
-        for(Row result_row: result) {
-            System.out.format("%s %s %s\n", result_row.getUUID("user_id"), result_row.getString("first_name"), result_row.getString("second_name"));
-        }
+//        Statement allUsersStatement = QueryBuilder.select().all().from("server_auth", "user_table");
+//        ResultSet result = session.execute(allUsersStatement);
+//        for(Row result_row: result) {
+//            System.out.format("%s %s %s\n", result_row.getUUID("user_id"), result_row.getString("first_name"), result_row.getString("second_name"));
+//        }
                 
     }
     
